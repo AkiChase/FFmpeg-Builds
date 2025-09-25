@@ -24,6 +24,8 @@ if [[ -z "$QUICKBUILD" ]]; then
     BASE_IMAGE_TARGET="${PWD}/.cache/images/base"
     if [[ ! -d "${BASE_IMAGE_TARGET}" ]]; then
         docker buildx --builder ffbuilder build \
+        --driver-opt env.http_proxy=$http_proxy \
+        --driver-opt env.https_proxy=$https_proxy \
             --cache-from=type=local,src=.cache/"${BASE_IMAGE/:/_}" \
             --cache-to=type=local,mode=max,dest=.cache/"${BASE_IMAGE/:/_}" \
             --load --tag "${BASE_IMAGE}" \
@@ -35,6 +37,8 @@ if [[ -z "$QUICKBUILD" ]]; then
     IMAGE_TARGET="${PWD}/.cache/images/base-${TARGET}"
     if [[ ! -d "${IMAGE_TARGET}" ]]; then
         docker buildx --builder ffbuilder build \
+            --driver-opt env.http_proxy=$http_proxy \
+            --driver-opt env.https_proxy=$https_proxy \
             --cache-from=type=local,src=.cache/"${TARGET_IMAGE/:/_}" \
             --cache-to=type=local,mode=max,dest=.cache/"${TARGET_IMAGE/:/_}" \
             --build-arg GH_REPO="${REGISTRY}/${REPO}" \
@@ -54,6 +58,8 @@ fi
 ./generate.sh "$TARGET" "$VARIANT" "${ADDINS[@]}"
 
 docker buildx --builder ffbuilder build \
+    --driver-opt env.http_proxy=$http_proxy \
+    --driver-opt env.https_proxy=$https_proxy \
     --cache-from=type=local,src=.cache/"${IMAGE/:/_}" \
     --cache-to=type=local,mode=max,dest=.cache/"${IMAGE/:/_}" \
     --build-context "${TARGET_IMAGE}=${CONTEXT_SRC}" \
